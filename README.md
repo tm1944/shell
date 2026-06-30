@@ -18,6 +18,12 @@ Criteria
 - Loop exits on typing exit     
 - Handle empty inputs w/o crashing
 
-
+Notes
+stringToTokens, print back tokenized version of line
+    - This takes a string and returns to a vector<string> using isstringstream, " " as delimeter
+    - We are getting the whole line as a string using getline() (delimeter "\n")
+    - getline() returns a reference to the isstream& (this can be used as true/false)
+    - the string is then added to the second param variable
+    - for now just printing back the line from the returned vector
 
 
