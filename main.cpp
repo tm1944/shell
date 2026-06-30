@@ -24,6 +24,7 @@ int main() {
 	while(continue_shell){
 		// Basic UserInput 
 		std::string user_input;
+		std::cout << "$HELL % ";
 		std::getline(std::cin,user_input);
 
 		//Shell Conditionals
