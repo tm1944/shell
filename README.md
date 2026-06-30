@@ -26,4 +26,17 @@ stringToTokens, print back tokenized version of line
     - the string is then added to the second param variable
     - for now just printing back the line from the returned vector
 
+*Milestone 2*
+Use fork() + execvp() + waitpid() to run the parsed commands as a real programs. Also slight frontend improvement add a tm@shell $  or something at the beginning of each line.
+
+Criteria
+- ls, pwd,echo hello run and produce real output 
+- If command doesn't exist print error instead of crashing
+- Parent process waits for child before printing next prompt
+- understand the fork,execvp and waitpid in depth
+
+Notes
+
+
+
 
