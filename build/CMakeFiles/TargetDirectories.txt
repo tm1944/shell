@@ -1,3 +1,0 @@
-/Users/tallalmohar/Documents/cpp/shell/build/CMakeFiles/shell.dir
-/Users/tallalmohar/Documents/cpp/shell/build/CMakeFiles/edit_cache.dir
-/Users/tallalmohar/Documents/cpp/shell/build/CMakeFiles/rebuild_cache.dir
