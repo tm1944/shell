@@ -4,6 +4,8 @@
 
 
 
+
+// Input a string return vector<string> using whitespace as delimeter
 std::vector<std::string> stringToTokens(std::string& inputString){
 	std::vector<std::string> tokens;
 	std::istringstream str(inputString);
@@ -26,7 +28,15 @@ int main() {
 		//Shell Conditionals
 		if (user_input == "exit"){
 			continue_shell = false;
+		}else//user inputted actual commands
+		{ 
+			for(std::string t : stringToTokens(user_input)){
+				std::cout << "[" << t << "] ";
+			}
+			std::cout << "break out\n";
 		}
+
+		std::cout << std::endl;
 	}
 	return 0;
 }
