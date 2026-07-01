@@ -30,13 +30,33 @@ stringToTokens, print back tokenized version of line
 Use fork() + execvp() + waitpid() to run the parsed commands as a real programs. Also slight frontend improvement add a tm@shell $  or something at the beginning of each line.
 
 Criteria
-- ls, pwd,echo hello run and produce real output 
+- ls, pwd , echo hello run and produce real output 
 - If command doesn't exist print error instead of crashing
 - Parent process waits for child before printing next prompt
 - understand the fork,execvp and waitpid in depth
 
 Notes
+fork() - this creates a child process however doesn't run the process. It returns the child  PID on creation and -1 if the creation of the child fails.
+execvp() -  #include <unistd.h> used to exec a executable file via path. It achieves this via replacing the current process with a new process loaded from executable file. We will be using this to exec the forked child process. 
+    - int execvp(const char *file, char *const argv[]);
+        - file => what program to run (name or path of the exec)
+        - argv => argument vector for the new program
+            - this an array of strings passed to the new program, this is the same one that main recieves (mental model wise not the literal same). argv must be NULL-terminated 
+waitpid() => lets the parent wait for a specific child to finish ahd read how it exited
+    - #include <sys/wait.h> 
+    - pid_t waitpid(pid_t pid,int *status, int options);
+    - pid > 0 means wait for the child with that PID, -1 means wait for any child, 0 means wait for any child in the same process group as the caller,
+        < -1 means wait for any child whos process group ID equals -pid
+    - status - where exit info is store, pass NULL if I don't care how the child exited
+    - options - blocking behaviour 
+    - We want to use waitpid() instead of wait because wait() waits for any child where waitpid() allows me to specify
+FULL PATTERN => fork() -> exec -> waitpid
+mental model => fork() creates child; parents get PID. execvp() child runs another program. waitpid() allows parent to pause until that child is done, then learns how it ended(exit or success)
 
 
-
+TODO: 
+    commands not working witout flags
+    write up understanding of how this system works
+THE GOOD:
+    Got the shell to work somewhat for today, great first day of CPP. Only bout 400 good days for a     systems engineer job :D
 
