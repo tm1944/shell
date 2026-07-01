@@ -71,4 +71,7 @@ Jul 1,2026
     execvp() and die, the parent process waits. we use waitpid because we can select which pid_t        to wait for, and also we can collect the status of how the child died via &status. This is what 
     I am going to use to show error for that command no existing, hypothesis is that the status 
     would return -1, when execvp doesn't find the command that i inputed.
+        - The hypothesis was correct we can use WIFEXITED() and WIFSIGNALED() to extrate the code of            status and see if it crashed or the file wasn't found. WEXITSATUS() to get the 8 bit 
+            number to see the code! 
+
 

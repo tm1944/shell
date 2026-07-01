@@ -61,9 +61,12 @@ void exec_command_via_child(char *const argv[]){
 std::vector<char*> make_argv(std::vector<std::string> tokens){
 	//make the char* vector for execvp from vector<strings>
 	std::vector<char*> args;
-	args.push_back(const_cast<char*>(tokens[0].c_str()));
-	args.push_back(const_cast<char*>(tokens[1].c_str()));
-	args.push_back(nullptr);
+	//args.push_back(const_cast<char*>(tokens[0].c_str()));
+	//args.push_back(const_cast<char*>(tokens[1].c_str()));
+	for(const std::string& t : tokens){
+		args.push_back(const_cast<char*>(t.c_str()));
+	}
+	args.push_back(NULL);
 	return args;
 }
 
