@@ -39,10 +39,21 @@ void exec_command_via_child(char *const argv[]){
 		int status;
 		waitpid(pid,&status,0);
 		// pid of child, 0 means wait for provided pid and status holds how child died
-		//
+		// ERROR MESSAGE FOR UNKNOWN command!
+		if(WIFEXITED(status)){
+			int code = WEXITSTATUS(status);
+			if (code != 0){
+				// code not being 0 means that the code 
+				// didn't exit/end via exit(0) or return 0;
+				// code ran to completion but reported error
+				std::cerr << "ERROR: command not found: " << argv[0] << std::endl;
+			}
+		}else if(WIFSIGNALED(status)){
+			// program didn't run to completion via crash/error
+			std::cout << "KILLED BY SIGNAL" << std::endl;
+		}
 
 	}
-	std::cout << std::endl;
 
 }
 
@@ -74,7 +85,6 @@ int main() {
 			for(const std::string& t : tokens){
 				std::cout << "[" << t << "] ";
 			}*/
-			std::cout << std::endl;
 			exec_command_via_child(make_argv(tokens).data());
 		}
 	}

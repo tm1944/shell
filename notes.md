@@ -60,3 +60,15 @@ TODO:
 THE GOOD:
     Got the shell to work somewhat for today, great first day of CPP. Only bout 400 good days for a     systems engineer job :D
 
+Jul 1,2026
+ - fork() => used to make a child process, this splits the program where the fork() was called. int     returns a 0 pid for the child process and a pid > 0 for the parent process. This process will
+    then execute the rest of the code (copied from the parent) then die when it hits the return 0 in    main. However we are using execvp() which changes the program image to the file in first param.
+- execvp() => We sacrifice our child program to run the file this points to. The second param is 
+    the argsv is a vector of char* "C strings". This is what will be passed to the programs main 
+    argv[0]. For example if file = "ls" and argsv = ["ls","-la",NULL] execvp will find the bin/ls 
+    and then pass the argsv to the main function.
+-waitpid() => This is for the parent function, as we wait for the child process to preform the 
+    execvp() and die, the parent process waits. we use waitpid because we can select which pid_t        to wait for, and also we can collect the status of how the child died via &status. This is what 
+    I am going to use to show error for that command no existing, hypothesis is that the status 
+    would return -1, when execvp doesn't find the command that i inputed.
+
