@@ -76,3 +76,7 @@ Jul 1,2026
 Memory BUGS:
 make_argv() -> has a memory bug. Right now I am making a vector of char*, vector<string> tokens params get's passed by value and then I run .c_str() on each index of the string vector. This gives me a char* to the string internal buffer, when i return args all local vars are destroyed however my char* still point to the addresses, which now don't have the string values.
 Solution => pass my vector<string> tokens by reference so that they are alive when exec_vp() run
+
+MileStone 2 is now done, I have a very decent understanding of how this all works. I used AI to judge my design decisions and it really helped me understand why stacking thinks like WIFEXITED and WIFESIGNALED is bad and cleared allot more understanding wise for me.
+
+
