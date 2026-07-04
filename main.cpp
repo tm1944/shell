@@ -31,7 +31,9 @@ void exec_command_via_child(char *const argv[]){
 	}else if(pid == 0){
 		//std::cout << "Child Process PID: " << pid << std::endl;
 		// name of exec file, argv 
-		execvp(argv[0],argv);
+		if (execvp(argv[0],argv) == -1){
+			std::cerr << "ERROR: command not found: " << argv[0] << std::endl;
+		}
 		_exit(1);
 
 	}else{
@@ -40,19 +42,10 @@ void exec_command_via_child(char *const argv[]){
 		waitpid(pid,&status,0);
 		// pid of child, 0 means wait for provided pid and status holds how child died
 		// ERROR MESSAGE FOR UNKNOWN command!
-		if(WIFEXITED(status)){
-			int code = WEXITSTATUS(status);
-			if (code != 0){
-				// code not being 0 means that the code 
-				// didn't exit/end via exit(0) or return 0;
-				// code ran to completion but reported error
-				std::cerr << "ERROR: command not found: " << argv[0] << std::endl;
-			}
-		}else if(WIFSIGNALED(status)){
+		if(WIFSIGNALED(status)){
 			// program didn't run to completion via crash/error
 			std::cout << "KILLED BY SIGNAL" << std::endl;
 		}
-
 	}
 
 }
