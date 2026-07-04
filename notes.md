@@ -73,5 +73,6 @@ Jul 1,2026
     would return -1, when execvp doesn't find the command that i inputed.
         - The hypothesis was correct we can use WIFEXITED() and WIFSIGNALED() to extrate the code of            status and see if it crashed or the file wasn't found. WEXITSATUS() to get the 8 bit 
             number to see the code! 
-
-
+Memory BUGS:
+make_argv() -> has a memory bug. Right now I am making a vector of char*, vector<string> tokens params get's passed by value and then I run .c_str() on each index of the string vector. This gives me a char* to the string internal buffer, when i return args all local vars are destroyed however my char* still point to the addresses, which now don't have the string values.
+Solution => pass my vector<string> tokens by reference so that they are alive when exec_vp() run
