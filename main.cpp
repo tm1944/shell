@@ -2,10 +2,11 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-
+#include <sys/param.h>
+#include <unistd.h>
+#include <stdio.h>
 
 
 // Input a string return vector<string> using whitespace as delimeter
@@ -74,6 +75,14 @@ int main() {
 		//Shell Conditionals
 		if (user_input == "exit"){
 			continue_shell = false;
+		}else if(user_input == "pwd"){
+			char buffer[MAXPATHLEN];
+			if(getcwd(buffer,sizeof(buffer)) != nullptr){
+				std::cout << buffer << std::endl;
+			}else{
+				perror("getcwd");
+			}
+		
 		}else//user inputted actual commands
 		{ 	
 			std::vector<std::string> tokens = stringToTokens(user_input);
