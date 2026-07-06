@@ -79,4 +79,18 @@ Solution => pass my vector<string> tokens by reference so that they are alive wh
 
 MileStone 2 is now done, I have a very decent understanding of how this all works. I used AI to judge my design decisions and it really helped me understand why stacking thinks like WIFEXITED and WIFESIGNALED is bad and cleared allot more understanding wise for me.
 
+*MileStone 3*
+Implement built-in pwd cd and exit
 
+*Notes*
+For pwd i will be using getcwd() and MAXPATHLEN. I am relying allot more on the man pages to code,
+rather then searching up things. Will see how it pans out. So I made a buffer with its size being the MAXPATHLEN, then i passed that and its size to getcwd() which returned a char* buffer which i printed.
+
+For cd what we want is three commands:
+cd alone -> got to the home dir using getenv (DONE)
+cd <path> -> call chdir via tokens[1]
+chdir fails -> perror
+
+the combination of getenv and chdir makes builtin cd command very easy
+
+*MileStone 4*
