@@ -64,6 +64,18 @@ std::vector<char*> make_argv(std::vector<std::string> &tokens){
 	return args;
 }
 
+void print_current_dir(){
+	//implementation for pwd
+	char buffer[MAXPATHLEN];
+	if(getcwd(buffer,sizeof(buffer)) != nullptr){
+		std::cout << buffer << std::endl;
+	}else{
+		perror("getcwd");
+	}
+	
+}
+
+
 int main() {
 	bool continue_shell = true;
 	while(continue_shell){
@@ -72,26 +84,41 @@ int main() {
 		std::cout << "$HELL % ";
 		std::getline(std::cin,user_input);
 
-		//Shell Conditionals
-		if (user_input == "exit"){
-			continue_shell = false;
-		}else if(user_input == "pwd"){
-			char buffer[MAXPATHLEN];
-			if(getcwd(buffer,sizeof(buffer)) != nullptr){
-				std::cout << buffer << std::endl;
+
+		std::vector<std::string> tokens = stringToTokens(user_input);
+		if (tokens.size() > 0){
+			//Shell Conditionals
+			if (tokens[0] == "exit"){
+				continue_shell = false;
+			}else if(tokens[0] == "pwd"){
+				print_current_dir();
+			}else if (tokens[0] == "cd"){
+				if(tokens.size() == 1){
+					// cd  -> if no other params we go to home dir
+					// got to $HOME
+					if (const char* home_dir = getenv("HOME")){
+						if(chdir(home_dir) == -1){
+							perror("chdir : ");
+						}
+					}
+				}else if(tokens.size() > 1){
+					// checking if second param is a valid directory
+ 					if(chdir(tokens[1].c_str()) == -1){
+						perror("chdir : ");
+					}
+				}
 			}else{
-				perror("getcwd");
+				//user inputted actual commands 	
+				/* print out tokenized vector values
+				for(const std::string& t : tokens){
+					std::cout << "[" << t << "] ";
+				}*/
+				std::vector<char*> argv_tokens = make_argv(tokens);
+				exec_command_via_child(argv_tokens.data());
 			}
-		
-		}else//user inputted actual commands
-		{ 	
-			std::vector<std::string> tokens = stringToTokens(user_input);
-			/* print out tokenized vector values
-			for(const std::string& t : tokens){
-				std::cout << "[" << t << "] ";
-			}*/
-			std::vector<char*> argv_tokens = make_argv(tokens);
-			exec_command_via_child(argv_tokens.data());
+		}else{
+			//user pressed enter withing typing anything in
+			continue;
 		}
 	}
 	return 0;
