@@ -94,3 +94,29 @@ chdir fails -> perror
 the combination of getenv and chdir makes builtin cd command very easy
 
 *MileStone 4*
+Support redirecting a command's input and output to/from files using >, <, and >>. The shell should detect these operators in the token list, open the appropriate file, and wire it to the child's stdin or stdout before execvp runs
+
+Acceptance Criteria
+- echo hello > out.txt creates or overwrites out.txt with hello
+- echo hello >> out.txt appends to out.txt rather than overwriting
+- sort < input.txt reads from the file instead of the terminal
+- Combining both works: sort < in.txt > out.txt
+- Invalid file paths print an error and don't crash
+- No file descriptor leaks  any fd you open() in the parent must be close()'d after the fork
+- The redirection operators and filename are stripped from the argv passed to execvp — echo shouldn't see > or out.txt as arguments
+
+*Notes*
+Key Syscalls -> open,dup2,close
+
+Sys design of how this is going to work:
+The OS by default has 3 fd's (file descriptors)
+fd0 -> stdin (keyboard)
+fd1 -> stdout (terminal)
+fd2 -> stderr (terminal)
+
+we are going to use open('out.txt',...) to open to fd 3 for example 
+then use dup2 to dup stdin to the text file dup2(3,1) after that we are removing 
+the > flag aswell as out.txt out of the argsv. when echo function does what its wants
+it doesn't know wheather it is pointing to the terminal or a text file. when the child dies the 
+parent will close(3).
+we are doing basic routing, changing where the functions are writing and reading from
