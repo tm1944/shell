@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -113,6 +114,30 @@ int main() {
 				for(const std::string& t : tokens){
 					std::cout << "[" << t << "] ";
 				}*/
+
+				std::vector<std::string> io_vec;
+				for(int i = 0; i < tokens.size();i++){
+						if(
+								tokens[i] == "<" || tokens[i] == ">" || tokens[i] == ">>"
+						){
+								// first instance of the pipes and we push them 
+								// and the next arg into the io_vec
+						io_vec.push_back(tokens[i]);
+						if(i + 1 < tokens.size()){
+								io_vec.push_back(tokens[i+1]);
+						}
+						}
+
+				}
+				// every arg in io_vec gets removed from tokens before 
+				// passed to exec_vp
+				// TODO: edge case if there is echo hello > hello
+				// The std::remove will remove all instance the first argument "hello"
+				// and echo will get no argument. future bug fix
+				for(const std::string& t : io_vec){
+						tokens.erase(std::remove(tokens.begin(),tokens.end(),t),tokens.end());
+
+				}
 				std::vector<char*> argv_tokens = make_argv(tokens);
 				exec_command_via_child(argv_tokens.data());
 			}
