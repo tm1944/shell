@@ -1,5 +1,4 @@
 #include <iostream>
-#include <algorithm>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -23,6 +22,68 @@ std::vector<std::string> stringToTokens(const std::string& inputString){
 } 
 
 
+// makes io_vec which is a vector<vector<string>> 
+// tokens ={"echo","hello",">","out.txt"}
+// to:
+// {{">","out.txt"}}
+std::vector<std::vector<std::string>> make_io_vec(std::vector<std::string> tokens){
+			std::vector<std::vector<std::string>> io_vec;
+
+				int outer_index = 0;
+				for(int i = 0; i < tokens.size();i++){
+						if(
+								tokens[i] == "<" || tokens[i] == ">" || tokens[i] == ">>"
+						){
+								// first instance of the pipes and we push them 
+								// and the next arg into the io_vec
+							io_vec.push_back({});
+							io_vec[outer_index].push_back(tokens[i]);
+							if(i + 1 < tokens.size()){
+									io_vec[outer_index].push_back(tokens[i+1]);
+								}
+							outer_index++;
+						}
+				}
+				return io_vec;
+}
+
+
+
+//removes all values from tokens vec that is the in the io_vec
+std::vector<std::string> stripped_tokens(std::vector<std::string> default_vector){
+	int i = 0;
+	std::vector<std::string> stripped_tokens;
+	while (i < default_vector.size()){
+					if(
+							default_vector[i] != "<" && default_vector[i] != ">" && default_vector[i] != ">>"
+						)
+					{
+						stripped_tokens.push_back(default_vector[i]);
+						i++;
+					}else{
+						i+=2; //skip the next one cause thats the file 
+					}
+	}
+	return stripped_tokens;
+}
+
+
+void io_filedescriptors(std::vector<std::vector<std::string>> io_vec){
+	//opens the fd required for the program 
+	
+	// what fd to open etc
+	for (const std::vector<std::string>& t : io_vec){
+		if (t[0] == ">"){
+
+		}else if(t[0] == ">"){
+
+		}else if(t[0] == ">>"){
+
+		}
+	}
+}
+
+
 
 void exec_command_via_child(char *const argv[]){
 	//fork -> exec -> waitpid
@@ -31,6 +92,7 @@ void exec_command_via_child(char *const argv[]){
 	if (pid == -1){
 		std::cerr << "Fork Failed!"  << std::endl;
 	}else if(pid == 0){
+		//CHILD PROCESS
 		//std::cout << "Child Process PID: " << pid << std::endl;
 		// name of exec file, argv 
 		if (execvp(argv[0],argv) == -1){
@@ -39,6 +101,7 @@ void exec_command_via_child(char *const argv[]){
 		_exit(1);
 
 	}else{
+		// PARENT PROCESS
 		//std::cout << "Parent Process PID: " << pid << std::endl;
 		int status;
 		waitpid(pid,&status,0);
@@ -109,35 +172,12 @@ int main() {
 					}
 				}
 			}else{
-				//user inputted actual commands 	
-				/* print out tokenized vector values
-				for(const std::string& t : tokens){
-					std::cout << "[" << t << "] ";
-				}*/
-
-				std::vector<std::string> io_vec;
-				for(int i = 0; i < tokens.size();i++){
-						if(
-								tokens[i] == "<" || tokens[i] == ">" || tokens[i] == ">>"
-						){
-								// first instance of the pipes and we push them 
-								// and the next arg into the io_vec
-						io_vec.push_back(tokens[i]);
-						if(i + 1 < tokens.size()){
-								io_vec.push_back(tokens[i+1]);
-						}
-						}
-
-				}
-				// every arg in io_vec gets removed from tokens before 
-				// passed to exec_vp
-				// TODO: edge case if there is echo hello > hello
-				// The std::remove will remove all instance the first argument "hello"
-				// and echo will get no argument. future bug fix
-				for(const std::string& t : io_vec){
-						tokens.erase(std::remove(tokens.begin(),tokens.end(),t),tokens.end());
-
-				}
+				std::vector<std::vector<std::string>> io_vec = make_io_vec(tokens);
+				io_filedescriptors(io_vec);
+				//strip the tokens vector of IO redirection
+				//convert the stripped_tokens vector to argv_tokens
+				//pass to exec_vp to exec the command
+				tokens = stripped_tokens(tokens);
 				std::vector<char*> argv_tokens = make_argv(tokens);
 				exec_command_via_child(argv_tokens.data());
 			}

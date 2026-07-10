@@ -107,7 +107,9 @@ Acceptance Criteria
 
 *Notes*
 Key Syscalls -> open,dup2,close
-
+open() ->
+dup2() ->
+close() ->
 Sys design of how this is going to work:
 The OS by default has 3 fd's (file descriptors)
 fd0 -> stdin (keyboard)
@@ -120,3 +122,4 @@ the > flag aswell as out.txt out of the argsv. when echo function does what its 
 it doesn't know wheather it is pointing to the terminal or a text file. when the child dies the 
 parent will close(3).
 we are doing basic routing, changing where the functions are writing and reading from
+
