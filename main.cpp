@@ -7,6 +7,7 @@
 #include <sys/param.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <fcntl.h>
 
 
 // Input a string return vector<string> using whitespace as delimeter
@@ -70,31 +71,56 @@ std::vector<std::string> stripped_tokens(std::vector<std::string> default_vector
 
 void io_filedescriptors(std::vector<std::vector<std::string>> io_vec){
 	//opens the fd required for the program 
-	
 	// what fd to open etc
+	int fd;
 	for (const std::vector<std::string>& t : io_vec){
 		if (t[0] == ">"){
-
-		}else if(t[0] == ">"){
-
+			fd = open(t[1].c_str(),O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if(fd != -1){
+				dup2(fd,1);
+				close(fd);
+			}else{
+				perror("io_filedescriptors: ");
+				_exit(1);
+			}
+		}else if(t[0] == "<"){
+			fd = open(t[1].c_str(),O_RDONLY); 
+			if(fd != -1){
+				dup2(fd,0);
+				close(fd);
+			}else{
+				perror("io_filedescriptors: ");
+				_exit(1);
+			}
 		}else if(t[0] == ">>"){
-
+			fd = open(t[1].c_str(),O_WRONLY | O_CREAT | O_APPEND , 0644);
+			if(fd != -1){
+				dup2(fd,1);
+				close(fd);
+			}else{
+				perror("io_filedescriptors: ");
+				_exit(1);
+			}
 		}
 	}
 }
 
 
 
-void exec_command_via_child(char *const argv[]){
+void exec_command_via_child(char *const argv[],std::vector<std::vector<std::string>> io_vec){
 	//fork -> exec -> waitpid
 	pid_t pid;
 	pid = fork(); // creating the child process
+
+	
 	if (pid == -1){
 		std::cerr << "Fork Failed!"  << std::endl;
 	}else if(pid == 0){
 		//CHILD PROCESS
 		//std::cout << "Child Process PID: " << pid << std::endl;
 		// name of exec file, argv 
+
+		io_filedescriptors(io_vec);
 		if (execvp(argv[0],argv) == -1){
 			std::cerr << "ERROR: command not found: " << argv[0] << std::endl;
 		}
@@ -172,14 +198,13 @@ int main() {
 					}
 				}
 			}else{
-				std::vector<std::vector<std::string>> io_vec = make_io_vec(tokens);
-				io_filedescriptors(io_vec);
 				//strip the tokens vector of IO redirection
 				//convert the stripped_tokens vector to argv_tokens
 				//pass to exec_vp to exec the command
+				std::vector<std::vector<std::string>> io_vec = make_io_vec(tokens);
 				tokens = stripped_tokens(tokens);
 				std::vector<char*> argv_tokens = make_argv(tokens);
-				exec_command_via_child(argv_tokens.data());
+				exec_command_via_child(argv_tokens.data(),io_vec);
 			}
 		}else{
 			//user pressed enter withing typing anything in

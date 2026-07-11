@@ -1,4 +1,4 @@
-**Objective**
+*Objective**
 Build a working command-line shell from scratch that can run real programs, handle built-in command,and support I/O redirection and pipes. The goal isn't a feature-complete shell but to build a working mental model of processes, file descriptors, and how a shell actually works!
 
 **Out of Scope (For V1)**
@@ -107,9 +107,12 @@ Acceptance Criteria
 
 *Notes*
 Key Syscalls -> open,dup2,close
-open() ->
-dup2() ->
-close() ->
+open() -> used for opening the file it retuns a number (fd)
+dup2() -> we use the fd number given from open to duplicate 0,1,2 to this new fd
+close() -> close the fd after have finished in the child after fork before exec_vp
+
+But why in the child after fork and before exec_vp?
+
 Sys design of how this is going to work:
 The OS by default has 3 fd's (file descriptors)
 fd0 -> stdin (keyboard)
@@ -122,4 +125,8 @@ the > flag aswell as out.txt out of the argsv. when echo function does what its 
 it doesn't know wheather it is pointing to the terminal or a text file. when the child dies the 
 parent will close(3).
 we are doing basic routing, changing where the functions are writing and reading from
+
+
+some bugs TODO:
+io_file_descriptors() -> if someone does echo hi > : there will be an out of bounds error because there is not t[1]                         so I need to validate that io_vec doesn't have short pairs
 
